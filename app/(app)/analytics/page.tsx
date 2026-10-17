@@ -30,8 +30,6 @@ function AnalyticsContent() {
   return (
     <div>
       <h1 className="text-2xl font-bold mb-6">数据复盘</h1>
-
-      {/* 汇总卡片 */}
       <div className="grid grid-cols-5 gap-3 mb-6">
         {[
           ['阅读', 'views'], ['点赞', 'likes'], ['收藏', 'favorites'],
@@ -43,61 +41,33 @@ function AnalyticsContent() {
           </div>
         ))}
       </div>
-
-      {/* 录入表单 */}
       <div className="bg-white border rounded-xl p-5 mb-6">
         <h2 className="font-semibold mb-3">手动录入数据</h2>
         <div className="grid grid-cols-3 gap-4">
           <div>
             <label className="block text-xs text-slate-500 mb-1">平台</label>
-            <select 
-              className="w-full border rounded-lg px-3 py-2" 
-              value={form.platform} 
-              onChange={(e) => setForm({ ...form, platform: e.target.value })}
-            >
+            <select className="w-full border rounded-lg px-3 py-2" value={form.platform} onChange={(e) => setForm({ ...form, platform: e.target.value })}>
               {['小红书', '公众号', '知乎', '抖音', 'B站', '微博'].map((p) => <option key={p}>{p}</option>)}
             </select>
           </div>
-          <div>
-            <label className="block text-xs text-slate-500 mb-1">阅读量 (views)</label>
-            <input type="number" min="0" className="w-full border rounded-lg px-3 py-2" value={form.views} onChange={(e) => setForm({ ...form, views: Number(e.target.value) })} />
-          </div>
-          <div>
-            <label className="block text-xs text-slate-500 mb-1">点赞数 (likes)</label>
-            <input type="number" min="0" className="w-full border rounded-lg px-3 py-2" value={form.likes} onChange={(e) => setForm({ ...form, likes: Number(e.target.value) })} />
-          </div>
-          <div>
-            <label className="block text-xs text-slate-500 mb-1">收藏数 (favorites)</label>
-            <input type="number" min="0" className="w-full border rounded-lg px-3 py-2" value={form.favorites} onChange={(e) => setForm({ ...form, favorites: Number(e.target.value) })} />
-          </div>
-          <div>
-            <label className="block text-xs text-slate-500 mb-1">涨粉数 (followers)</label>
-            <input type="number" min="0" className="w-full border rounded-lg px-3 py-2" value={form.followers_gained} onChange={(e) => setForm({ ...form, followers_gained: Number(e.target.value) })} />
-          </div>
-          <div>
-            <label className="block text-xs text-slate-500 mb-1">收入金额 (¥)</label>
-            <input type="number" min="0" step="0.01" className="w-full border rounded-lg px-3 py-2" value={form.revenue} onChange={(e) => setForm({ ...form, revenue: Number(e.target.value) })} />
-          </div>
+          <div><label className="block text-xs text-slate-500 mb-1">阅读量 (views)</label><input type="number" min="0" className="w-full border rounded-lg px-3 py-2" value={form.views} onChange={(e) => setForm({ ...form, views: Number(e.target.value) })} /></div>
+          <div><label className="block text-xs text-slate-500 mb-1">点赞数 (likes)</label><input type="number" min="0" className="w-full border rounded-lg px-3 py-2" value={form.likes} onChange={(e) => setForm({ ...form, likes: Number(e.target.value) })} /></div>
+          <div><label className="block text-xs text-slate-500 mb-1">收藏数 (favorites)</label><input type="number" min="0" className="w-full border rounded-lg px-3 py-2" value={form.favorites} onChange={(e) => setForm({ ...form, favorites: Number(e.target.value) })} /></div>
+          <div><label className="block text-xs text-slate-500 mb-1">涨粉数 (followers)</label><input type="number" min="0" className="w-full border rounded-lg px-3 py-2" value={form.followers_gained} onChange={(e) => setForm({ ...form, followers_gained: Number(e.target.value) })} /></div>
+          <div><label className="block text-xs text-slate-500 mb-1">收入金额 (¥)</label><input type="number" min="0" step="0.01" className="w-full border rounded-lg px-3 py-2" value={form.revenue} onChange={(e) => setForm({ ...form, revenue: Number(e.target.value) })} /></div>
         </div>
         <button onClick={submit} className="mt-4 bg-black text-white px-4 py-2 rounded-lg text-sm hover:bg-slate-800">保存记录</button>
       </div>
-
-      {/* 历史记录表格 */}
       <div className="bg-white border rounded-xl p-5">
         <h2 className="font-semibold mb-3">历史记录</h2>
         <table className="w-full text-sm text-left">
           <thead className="text-slate-500 border-b">
-            <tr>
-              <th className="py-2">日期</th><th>平台</th><th>阅读</th><th>点赞</th><th>收藏</th><th>涨粉</th><th>收入</th>
-            </tr>
+            <tr><th className="py-2">日期</th><th>平台</th><th>阅读</th><th>点赞</th><th>收藏</th><th>涨粉</th><th>收入</th></tr>
           </thead>
           <tbody>
             {list.map((r) => (
               <tr key={r.id} className="border-b last:border-0 hover:bg-slate-50">
-                <td className="py-2">{r.recorded_at}</td>
-                <td>{r.platform}</td>
-                <td>{r.views}</td><td>{r.likes}</td><td>{r.favorites}</td>
-                <td>{r.followers_gained}</td><td>¥{r.revenue}</td>
+                <td className="py-2">{r.recorded_at}</td><td>{r.platform}</td><td>{r.views}</td><td>{r.likes}</td><td>{r.favorites}</td><td>{r.followers_gained}</td><td>¥{r.revenue}</td>
               </tr>
             ))}
           </tbody>
@@ -108,6 +78,7 @@ function AnalyticsContent() {
   )
 }
 
+// 👇 这一句是解决报错的核心：用 Suspense 包起来
 export default function AnalyticsPage() {
   return (
     <Suspense fallback={<div className="p-8 text-slate-500">正在加载数据复盘...</div>}>
