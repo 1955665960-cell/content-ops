@@ -1,4 +1,5 @@
 'use client'
+export const instant = false;
 import { useEffect, useState, Suspense } from 'react'
 
 function AnalyticsContent() {
