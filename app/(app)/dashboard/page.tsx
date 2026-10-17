@@ -1,3 +1,4 @@
+export const instant = false;
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 
