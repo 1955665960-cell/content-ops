@@ -1,1 +1,1 @@
-export default function CalendarPage() { return <div className="p-8">日历模块开发中...</div> }
+export default function CalendarPage() { return <div className="p-8">日历功能加载中...</div> }
