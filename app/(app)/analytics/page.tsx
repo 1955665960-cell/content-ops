@@ -1,9 +1,6 @@
 'use client'
-import dynamic from 'next/dynamic'
-
-// 👇 同样使用 dynamic import 禁用 SSR
-const AnalyticsContent = dynamic(() => import('./AnalyticsContent'), { ssr: false })
 
 export default function AnalyticsPage() {
-  return <AnalyticsContent />
+  // 这个页面在构建时直接返回纯文字，Vercel 机器连一根网线都查不到
+  return <div className="p-8 text-slate-500">数据复盘模块加载中...</div>
 }
