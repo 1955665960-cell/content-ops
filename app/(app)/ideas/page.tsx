@@ -1,1 +1,1 @@
-export default function IdeasPage() { return <div className="p-8">加载中...</div> }
+export default function IdeasPage() { return <div className="p-8">选题模块开发中...</div> }

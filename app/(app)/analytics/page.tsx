@@ -1,1 +1,1 @@
-export default function AnalyticsPage() { return <div className="p-8">加载中...</div> }
+export default function AnalyticsPage() { return <div className="p-8">数据模块开发中...</div> }
