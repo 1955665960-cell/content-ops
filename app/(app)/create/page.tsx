@@ -1,1 +1,1 @@
-export default function CreatePage() { return <div className="p-8">加载中...</div> }
+export default function CreatePage() { return <div>开发中</div> }
