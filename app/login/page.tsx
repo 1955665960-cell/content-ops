@@ -24,7 +24,7 @@ export default function LoginPage() {
 
   async function handleLogin() {
     setLoading(true); setMsg('')
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
+    const { error } = await supabase.auth.signInWithPassword({ email, password }) 
     setLoading(false)
     if (error) return setMsg(translateError(error.message))
     router.push('/dashboard')
