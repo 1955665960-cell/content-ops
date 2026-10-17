@@ -1,7 +1,7 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 
-export default function AnalyticsPage() {
+function AnalyticsContent() {
   const [list, setList] = useState<any[]>([])
   const [form, setForm] = useState({
     platform: '小红书',
@@ -48,7 +48,6 @@ export default function AnalyticsPage() {
       <div className="bg-white border rounded-xl p-5 mb-6">
         <h2 className="font-semibold mb-3">手动录入数据</h2>
         <div className="grid grid-cols-3 gap-4">
-          {/* 平台选择 */}
           <div>
             <label className="block text-xs text-slate-500 mb-1">平台</label>
             <select 
@@ -59,28 +58,22 @@ export default function AnalyticsPage() {
               {['小红书', '公众号', '知乎', '抖音', 'B站', '微博'].map((p) => <option key={p}>{p}</option>)}
             </select>
           </div>
-
-          {/* 逐个生成带标签的输入框 */}
           <div>
             <label className="block text-xs text-slate-500 mb-1">阅读量 (views)</label>
             <input type="number" min="0" className="w-full border rounded-lg px-3 py-2" value={form.views} onChange={(e) => setForm({ ...form, views: Number(e.target.value) })} />
           </div>
-          
           <div>
             <label className="block text-xs text-slate-500 mb-1">点赞数 (likes)</label>
             <input type="number" min="0" className="w-full border rounded-lg px-3 py-2" value={form.likes} onChange={(e) => setForm({ ...form, likes: Number(e.target.value) })} />
           </div>
-
           <div>
             <label className="block text-xs text-slate-500 mb-1">收藏数 (favorites)</label>
             <input type="number" min="0" className="w-full border rounded-lg px-3 py-2" value={form.favorites} onChange={(e) => setForm({ ...form, favorites: Number(e.target.value) })} />
           </div>
-
           <div>
             <label className="block text-xs text-slate-500 mb-1">涨粉数 (followers)</label>
             <input type="number" min="0" className="w-full border rounded-lg px-3 py-2" value={form.followers_gained} onChange={(e) => setForm({ ...form, followers_gained: Number(e.target.value) })} />
           </div>
-
           <div>
             <label className="block text-xs text-slate-500 mb-1">收入金额 (¥)</label>
             <input type="number" min="0" step="0.01" className="w-full border rounded-lg px-3 py-2" value={form.revenue} onChange={(e) => setForm({ ...form, revenue: Number(e.target.value) })} />
@@ -112,5 +105,13 @@ export default function AnalyticsPage() {
         {list.length === 0 && <div className="text-sm text-slate-500 py-4 text-center">还没有记录，去上面录入一条吧。</div>}
       </div>
     </div>
+  )
+}
+
+export default function AnalyticsPage() {
+  return (
+    <Suspense fallback={<div className="p-8 text-slate-500">正在加载数据复盘...</div>}>
+      <AnalyticsContent />
+    </Suspense>
   )
 }
