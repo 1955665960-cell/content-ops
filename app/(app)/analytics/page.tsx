@@ -1,6 +1,27 @@
 'use client'
+export const instant = false
+import { useEffect, useState } from 'react'
 
 export default function AnalyticsPage() {
-  // 这个页面在构建时直接返回纯文字，Vercel 机器连一根网线都查不到
-  return <div className="p-8 text-slate-500">数据复盘模块加载中...</div>
+  const [list, setList] = useState<any[]>([])
+
+  useEffect(() => {
+    fetch('/api/analytics').then(res => res.json()).then(data => setList(data.analytics || []))
+  }, [])
+
+  return (
+    <div>
+      <h1 className="text-2xl font-bold mb-6">数据复盘</h1>
+      <div className="bg-white border rounded-xl p-5">
+        <div className="text-sm text-slate-500 mb-4">共获取到 {list.length} 条历史记录。</div>
+        <div className="space-y-2">
+          {list.map((r: any) => (
+            <div key={r.id} className="border p-3 rounded-lg text-sm">
+              {r.recorded_at} - {r.platform} - 阅读: {r.views}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
 }
