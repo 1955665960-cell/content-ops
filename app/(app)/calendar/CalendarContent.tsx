@@ -2,20 +2,21 @@
 import { useEffect, useState } from 'react'
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, addMonths, subMonths } from 'date-fns'
 
+async function fetchContents() {
+  const res = await fetch('/api/contents')
+  return res.json()
+}
+
 export default function CalendarContent() {
   const [contents, setContents] = useState<any[]>([])
   const [cursor, setCursor] = useState(new Date())
   const [selected, setSelected] = useState(new Date())
   const [isMounted, setIsMounted] = useState(false)
 
-  useEffect(() => { setIsMounted(true) }, [])
-
-  async function load() {
-    const res = await fetch('/api/contents')
-    const data = await res.json()
-    setContents(data.contents || [])
-  }
-  useEffect(() => { load() }, [])
+  useEffect(() => {
+    setIsMounted(true)
+    fetchContents().then(data => setContents(data.contents || []))
+  }, [])
 
   async function updateStatus(id: string, status: string) {
     await fetch(`/api/contents/${id}`, {
@@ -23,13 +24,13 @@ export default function CalendarContent() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ status, scheduled_at: selected.toISOString() }),
     })
-    load()
+    fetchContents().then(data => setContents(data.contents || []))
   }
 
   async function remove(id: string) {
     if (!confirm('确定删除？')) return
     await fetch(`/api/contents/${id}`, { method: 'DELETE' })
-    load()
+    fetchContents().then(data => setContents(data.contents || []))
   }
 
   const days = eachDayOfInterval({ start: startOfMonth(cursor), end: endOfMonth(cursor) })

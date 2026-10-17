@@ -1,19 +1,24 @@
 'use client'
 import { useEffect, useState } from 'react'
 
+// 注意：我把请求数据的代码放在了组件外面
+async function fetchAnalytics() {
+  const res = await fetch('/api/analytics')
+  return res.json()
+}
+
 export default function AnalyticsContent() {
   const [list, setList] = useState<any[]>([])
   const [form, setForm] = useState({
     platform: '小红书',
     views: 0, likes: 0, favorites: 0, followers_gained: 0, revenue: 0,
   })
+  const [isMounted, setIsMounted] = useState(false)
 
-  async function load() {
-    const res = await fetch('/api/analytics')
-    const data = await res.json()
-    setList(data.analytics || [])
-  }
-  useEffect(() => { load() }, [])
+  useEffect(() => {
+    setIsMounted(true)
+    fetchAnalytics().then(data => setList(data.analytics || []))
+  }, [])
 
   async function submit() {
     await fetch('/api/analytics', {
@@ -22,10 +27,12 @@ export default function AnalyticsContent() {
       body: JSON.stringify(form),
     })
     setForm({ ...form, views: 0, likes: 0, favorites: 0, followers_gained: 0, revenue: 0 })
-    load()
+    fetchAnalytics().then(data => setList(data.analytics || []))
   }
 
   const sum = (key: string) => list.reduce((a, b) => a + (Number(b[key]) || 0), 0)
+
+  if (!isMounted) return null
 
   return (
     <div>
