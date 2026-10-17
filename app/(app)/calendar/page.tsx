@@ -6,6 +6,10 @@ function CalendarContent() {
   const [contents, setContents] = useState<any[]>([])
   const [cursor, setCursor] = useState(new Date())
   const [selected, setSelected] = useState(new Date())
+  
+  // 👇 终极魔法开关
+  const [isMounted, setIsMounted] = useState(false)
+  useEffect(() => { setIsMounted(true) }, [])
 
   async function load() {
     const res = await fetch('/api/contents')
@@ -34,35 +38,56 @@ function CalendarContent() {
   const dayContents = contents.filter((c) => c.scheduled_at && isSameDay(new Date(c.scheduled_at), selected))
   const unscheduled = contents.filter((c) => !c.scheduled_at)
 
+  // 👇 如果还没挂载到浏览器，返回 null，骗过 Vercel 的预渲染
+  if (!isMounted) return null
+
   return (
     <div>
       <h1 className="text-2xl font-bold mb-6">内容日历</h1>
+
       <div className="grid grid-cols-3 gap-6">
+        {/* 左侧日历区 */}
         <div className="col-span-2 bg-white border rounded-xl p-5">
           <div className="flex justify-between items-center mb-4">
             <button onClick={() => setCursor(subMonths(cursor, 1))} className="border px-3 py-1 rounded-lg">上月</button>
             <div className="font-semibold">{format(cursor, 'yyyy 年 MM 月')}</div>
             <button onClick={() => setCursor(addMonths(cursor, 1))} className="border px-3 py-1 rounded-lg">下月</button>
           </div>
+
           <div className="grid grid-cols-7 gap-1 text-center text-xs text-slate-400 mb-2">
             {['日','一','二','三','四','五','六'].map((d) => <div key={d}>{d}</div>)}
           </div>
+
           <div className="grid grid-cols-7 gap-1">
             {Array.from({ length: startWeekday }).map((_, i) => <div key={'e' + i} />)}
             {days.map((d) => {
               const items = contents.filter((c) => c.scheduled_at && isSameDay(new Date(c.scheduled_at), d))
               const isSel = isSameDay(d, selected)
               return (
-                <button key={d.toISOString()} onClick={() => setSelected(d)} className={`aspect-square rounded-lg border text-sm p-1 text-left ${isSel ? 'bg-black text-white' : 'hover:bg-slate-50'}`}>
+                <button
+                  key={d.toISOString()}
+                  onClick={() => setSelected(d)}
+                  className={`aspect-square rounded-lg border text-sm p-1 text-left ${
+                    isSel ? 'bg-black text-white' : 'hover:bg-slate-50'
+                  }`}
+                >
                   <div>{format(d, 'd')}</div>
-                  {items.length > 0 && <div className={`text-[10px] mt-1 ${isSel ? 'text-white' : 'text-slate-500'}`}>{items.length} 条</div>}
+                  {items.length > 0 && (
+                    <div className={`text-[10px] mt-1 ${isSel ? 'text-white' : 'text-slate-500'}`}>
+                      {items.length} 条
+                    </div>
+                  )}
                 </button>
               )
             })}
           </div>
         </div>
+
+        {/* 右侧详情区 */}
         <div className="bg-white border rounded-xl p-5">
           <h2 className="font-semibold mb-3">{format(selected, 'MM 月 dd 日')}</h2>
+          
+          {/* 未排期草稿区 */}
           {unscheduled.length > 0 && (
             <div className="mb-5 p-3 bg-slate-50 rounded-lg">
               <h3 className="text-xs font-semibold text-slate-500 mb-2">📝 未排期草稿</h3>
@@ -76,6 +101,8 @@ function CalendarContent() {
               </div>
             </div>
           )}
+
+          {/* 当天已排期内容 */}
           <div className="space-y-3">
             {dayContents.length === 0 && <div className="text-sm text-slate-500 text-center py-4">这一天还没有安排内容</div>}
             {dayContents.map((c) => (
@@ -96,7 +123,7 @@ function CalendarContent() {
   )
 }
 
-// 👇 这里加 Suspense
+// 👇 用 Suspense 包裹导出
 export default function CalendarPage() {
   return (
     <Suspense fallback={<div className="p-8 text-slate-500">正在加载日历...</div>}>

@@ -1,5 +1,4 @@
 'use client'
-export const instant = false;
 import { useEffect, useState, Suspense } from 'react'
 
 function AnalyticsContent() {
@@ -8,6 +7,12 @@ function AnalyticsContent() {
     platform: '小红书',
     views: 0, likes: 0, favorites: 0, followers_gained: 0, revenue: 0,
   })
+  const [isMounted, setIsMounted] = useState(false) // 👈 加上这句
+
+  // 👈 确保只在浏览器加载后渲染
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
   async function load() {
     const res = await fetch('/api/analytics')
@@ -27,6 +32,9 @@ function AnalyticsContent() {
   }
 
   const sum = (key: string) => list.reduce((a, b) => a + (Number(b[key]) || 0), 0)
+
+  // 👈 如果还没挂载，就返回空，躲过 Vercel 的预渲染检查
+  if (!isMounted) return null
 
   return (
     <div>
@@ -79,7 +87,6 @@ function AnalyticsContent() {
   )
 }
 
-// 👇 这一句是解决报错的核心：用 Suspense 包起来
 export default function AnalyticsPage() {
   return (
     <Suspense fallback={<div className="p-8 text-slate-500">正在加载数据复盘...</div>}>
