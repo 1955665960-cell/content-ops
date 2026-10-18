@@ -15,7 +15,7 @@ export default function Home() {
     setLoading(true); setErr(''); setIdeas([])
     try {
       // 👇 这里是你真实的 Vercel 后端地址
-      const API_URL = 'const API_URL = 'http://192.168.195.1:3000/api/ai/ideas''
+      const API_URL = 'http://192.168.195.1:3000/api/ai/ideas'
       
       const res = await fetch(API_URL, {
         method: 'POST',
