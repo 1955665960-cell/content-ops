@@ -1,15 +1,37 @@
+'use client'
+import { useState } from 'react'
 import Link from 'next/link'
-import { Lightbulb, PenLine, Calendar, BarChart3, LayoutDashboard } from 'lucide-react'
+import { LayoutDashboard, Lightbulb } from 'lucide-react'
 
 export default function Home() {
-  const stats = [
-    { label: '选题总数', value: '128' },
-    { label: '内容总数', value: '45' },
-    { label: '累计阅读', value: '8,420' },
-    { label: '累计点赞', value: '1,230' },
-    { label: '涨粉', value: '560' },
-    { label: '累计收入', value: '¥ 320.50' },
-  ]
+  const [topic, setTopic] = useState('')
+  const [platform, setPlatform] = useState('小红书')
+  const [ideas, setIdeas] = useState<any[]>([])
+  const [loading, setLoading] = useState(false)
+  const [err, setErr] = useState('')
+
+  async function generate() {
+    if (!topic.trim()) return
+    setLoading(true); setErr(''); setIdeas([])
+    try {
+      // 👇 这里是你真实的 Vercel 后端地址
+      const API_URL = 'https://content-8to8v0s42-fors-wall1.vercel.app/api/ai/ideas'
+      
+      const res = await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ topic, platform }),
+      })
+      
+      const data = await res.json()
+      if (data.error) throw new Error(data.error)
+      setIdeas(data.ideas || [])
+    } catch (error: any) {
+      setErr('网络请求失败，请稍后再试。')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
     <div className="min-h-screen flex bg-slate-50">
@@ -17,52 +39,62 @@ export default function Home() {
       <aside className="w-60 bg-white border-r flex flex-col min-h-screen">
         <div className="p-5 border-b">
           <div className="font-bold text-slate-800">内容运营助手</div>
-          <div className="text-xs text-slate-500 mt-1">demo@test.com (演示版)</div>
+          <div className="text-xs text-slate-500 mt-1">demo@test.com</div>
         </div>
         <nav className="flex-1 p-3 space-y-1">
-          <div className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm bg-black text-white cursor-pointer">
-            <LayoutDashboard size={16} /> 工作台
-          </div>
-          <div className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-slate-600 hover:bg-slate-100 cursor-not-allowed">
-            <Lightbulb size={16} /> 选题灵感
-          </div>
-          <div className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-slate-600 hover:bg-slate-100 cursor-not-allowed">
-            <PenLine size={16} /> 内容创作
-          </div>
-          <div className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-slate-600 hover:bg-slate-100 cursor-not-allowed">
-            <Calendar size={16} /> 内容日历
-          </div>
-          <div className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-slate-600 hover:bg-slate-100 cursor-not-allowed">
-            <BarChart3 size={16} /> 数据复盘
+          <div className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm bg-black text-white">
+            <LayoutDashboard size={16} /> 工作台 (AI 演示)
           </div>
         </nav>
       </aside>
 
-      {/* 右侧主内容区 */}
+      {/* 右侧主内容 */}
       <main className="flex-1 p-8">
-        <h1 className="text-2xl font-bold text-slate-800 mb-6">工作台 (演示)</h1>
+        <h1 className="text-2xl font-bold mb-6 text-slate-800">AI 选题灵感</h1>
         
-        <div className="grid grid-cols-3 gap-4 mb-8">
-          {stats.map((s) => (
-            <div key={s.label} className="bg-white rounded-xl p-4 border">
-              <div className="text-sm text-slate-500">{s.label}</div>
-              <div className="text-2xl font-bold mt-1 text-slate-800">{s.value}</div>
-            </div>
-          ))}
+        <div className="bg-white border rounded-xl p-5 mb-8 shadow-sm">
+          <div className="flex gap-3">
+            <input
+              className="flex-1 border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-black"
+              placeholder="输入你的领域，例如：大学生副业"
+              value={topic}
+              onChange={(e) => setTopic(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && generate()}
+            />
+            <select
+              className="border rounded-lg px-4 py-2 bg-white"
+              value={platform}
+              onChange={(e) => setPlatform(e.target.value)}
+            >
+              {['小红书', '公众号', '知乎', '抖音', 'B站', '微博'].map((p) => (
+                <option key={p}>{p}</option>
+              ))}
+            </select>
+            <button
+              onClick={generate}
+              disabled={loading}
+              className="bg-black text-white px-6 py-2 rounded-lg font-medium disabled:opacity-50 hover:bg-slate-800 transition-colors"
+            >
+              {loading ? 'AI 正在思考...' : '生成选题'}
+            </button>
+          </div>
+          {err && <p className="text-sm text-red-500 mt-3">{err}</p>}
         </div>
 
-        <div className="bg-white rounded-xl border p-5">
-          <h2 className="font-semibold mb-3 text-slate-800">最近内容</h2>
-          <div className="space-y-2">
-            <div className="flex justify-between items-center py-2 border-b last:border-0">
-              <div className="truncate text-slate-700">大学生副业避雷：这5种兼职千万别碰</div>
-              <div className="text-xs text-slate-500">小红书 · 草稿</div>
+        <div className="grid grid-cols-2 gap-4">
+          {ideas.map((i) => (
+            <div key={i.title} className="bg-white border rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow">
+              <div className="font-semibold text-lg mb-2 text-slate-800">{i.title}</div>
+              <div className="text-sm text-slate-500 mb-3">{i.angle}</div>
+              <div className="flex flex-wrap gap-2">
+                {(i.tags || []).map((t: string) => (
+                  <span key={t} className="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded-md">
+                    #{t}
+                  </span>
+                ))}
+              </div>
             </div>
-            <div className="flex justify-between items-center py-2 border-b last:border-0">
-              <div className="truncate text-slate-700">宿舍就能做的5个副业，我靠第三个月入3000+</div>
-              <div className="text-xs text-slate-500">小红书 · 已发布</div>
-            </div>
-          </div>
+          ))}
         </div>
       </main>
     </div>
