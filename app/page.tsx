@@ -15,7 +15,7 @@ export default function Home() {
     setLoading(true); setErr(''); setIdeas([])
     try {
       // 👇 这里是你真实的 Vercel 后端地址
-      const API_URL = 'https://content-8to8v0s42-fors-wall1.vercel.app/api/ai/ideas'
+      const API_URL = '/api/ai/ideas'
       
       const res = await fetch(API_URL, {
         method: 'POST',
