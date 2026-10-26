@@ -1,7 +1,5 @@
 'use client'
 import { useState } from 'react'
-import Link from 'next/link'
-import { LayoutDashboard, Lightbulb } from 'lucide-react'
 
 export default function Home() {
   const [topic, setTopic] = useState('')
@@ -14,12 +12,12 @@ export default function Home() {
     if (!topic.trim()) return
     setLoading(true); setErr(''); setIdeas([])
     try {
-      // 👇 这里是你真实的 Vercel 后端地址
       const API_URL = '/api/ai/ideas'
       
       const res = await fetch(API_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'omit', // 👈 拒绝任何旧Cookie
         body: JSON.stringify({ topic, platform }),
       })
       
@@ -35,7 +33,6 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex bg-slate-50">
-      {/* 左侧侧边栏 */}
       <aside className="w-60 bg-white border-r flex flex-col min-h-screen">
         <div className="p-5 border-b">
           <div className="font-bold text-slate-800">内容运营助手</div>
@@ -43,12 +40,11 @@ export default function Home() {
         </div>
         <nav className="flex-1 p-3 space-y-1">
           <div className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm bg-black text-white">
-            <LayoutDashboard size={16} /> 工作台 (AI 演示)
+            <span>工作台 (AI 演示)</span>
           </div>
         </nav>
       </aside>
 
-      {/* 右侧主内容 */}
       <main className="flex-1 p-8">
         <h1 className="text-2xl font-bold mb-6 text-slate-800">AI 选题灵感</h1>
         

@@ -30,7 +30,6 @@ export async function POST(req: Request) {
 
     const data = safeJson(completion.choices[0].message.content || '{}')
     
-    // 👇 为了演示，我们直接把 AI 生成的数据返回给前端，不存数据库了
     return NextResponse.json({ ideas: data.ideas || [] }, { headers })
     
   } catch (error: any) {
