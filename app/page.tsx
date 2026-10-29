@@ -8,8 +8,10 @@ export default function Home() {
   const [history, setHistory] = useState<any[]>([])
   const [loading, setLoading] = useState(false)
   const [err, setErr] = useState('')
+  
+  // 👇 新增状态：用于记录当前展开了哪个主题的历史记录
+  const [expandedTopic, setExpandedTopic] = useState<string | null>(null)
 
-  // 页面加载时，自动拉取一次历史记录
   useEffect(() => {
     fetchHistory()
   }, [])
@@ -37,13 +39,23 @@ export default function Home() {
       if (data.error) throw new Error(data.error)
       
       setIdeas(data.ideas || [])
-      fetchHistory() // 👈 生成成功后，立刻刷新右侧的历史记录！
+      fetchHistory()
     } catch (error: any) {
       setErr('网络请求失败，请稍后再试。')
     } finally {
       setLoading(false)
     }
   }
+
+  // 👇 核心逻辑：把扁平的历史数据，按主题（topic）分组
+  const groupedHistory = history.reduce((acc: any, curr: any) => {
+    // 如果该主题还没出现过，就初始化一个空数组
+    if (!acc[curr.topic]) {
+      acc[curr.topic] = []
+    }
+    acc[curr.topic].push(curr)
+    return acc
+  }, {})
 
   return (
     <div className="min-h-screen flex bg-slate-50">
@@ -115,21 +127,43 @@ export default function Home() {
 
         <div>
           <h2 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
-            📚 历史记录
+            📚 历史搜索主题
           </h2>
-          {history.length === 0 ? (
+          {Object.keys(groupedHistory).length === 0 ? (
             <div className="text-slate-500 text-sm">还没有历史记录，去左侧生成一次吧！</div>
           ) : (
             <div className="space-y-3">
-              {history.map((i) => (
-                <div key={i.id} className="bg-white border rounded-lg p-4 flex justify-between items-center shadow-sm">
-                  <div>
-                    <div className="font-medium text-slate-800">{i.title}</div>
-                    <div className="text-sm text-slate-500 mt-1">{i.angle}</div>
-                  </div>
-                  <div className="text-xs text-slate-400 whitespace-nowrap ml-4">
-                    {new Date(i.created_at).toLocaleDateString()}
-                  </div>
+              {/* 👇 渲染分组后的主题列表 */}
+              {Object.keys(groupedHistory).map((topicKey) => (
+                <div key={topicKey} className="bg-white border rounded-lg shadow-sm overflow-hidden">
+                  {/* 主题头部（可点击展开/收起） */}
+                  <button 
+                    onClick={() => setExpandedTopic(expandedTopic === topicKey ? null : topicKey)}
+                    className="w-full flex justify-between items-center p-4 hover:bg-slate-50 transition-colors text-left"
+                  >
+                    <div className="font-semibold text-slate-800">{topicKey}</div>
+                    <div className="text-xs text-slate-400 flex items-center gap-2">
+                      <span>{groupedHistory[topicKey].length} 条记录</span>
+                      <span>{expandedTopic === topicKey ? '▲' : '▼'}</span>
+                    </div>
+                  </button>
+                  
+                  {/* 展开后的详细内容 */}
+                  {expandedTopic === topicKey && (
+                    <div className="border-t p-4 bg-slate-50 space-y-4">
+                      {groupedHistory[topicKey].map((item: any) => (
+                        <div key={item.id} className="bg-white border rounded-lg p-4">
+                          <div className="font-medium text-slate-800">{item.title}</div>
+                          <div className="text-sm text-slate-500 mt-1">{item.angle}</div>
+                          <div className="flex flex-wrap gap-2 mt-3">
+                            {(item.tags || []).map((t: string) => (
+                              <span key={t} className="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded-md">#{t}</span>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
