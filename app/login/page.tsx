@@ -11,7 +11,7 @@ function translateError(msg: string) {
   if (msg.includes('Password should be at least 6 characters')) return '密码太短了，至少要6位哦。'
   if (msg.includes('Unable to validate email address: invalid format')) return '邮箱格式不对，请重新输入。'
   if (msg.includes('Email not confirmed')) return '邮箱还没有验证，请去邮箱收件箱点一下确认链接。'
-  return msg // 其他没预料到的错误，原样展示
+  return msg
 }
 
 export default function LoginPage() {
@@ -24,11 +24,13 @@ export default function LoginPage() {
 
   async function handleLogin() {
     setLoading(true); setMsg('')
-    const { error } = await supabase.auth.signInWithPassword({ email, password }) 
+    const { error } = await supabase.auth.signInWithPassword({ email, password })
     setLoading(false)
+    
     if (error) return setMsg(translateError(error.message))
-    router.push('/dashboard')
-    router.refresh()
+    
+    // 👇 登录成功，直接强制跳转，最稳妥的方法
+    window.location.href = '/'
   }
 
   async function handleSignUp() {
