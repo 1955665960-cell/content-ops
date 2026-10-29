@@ -4,7 +4,6 @@ import { Sparkles, History, LayoutDashboard } from 'lucide-react'
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState<'generate' | 'history'>('generate')
-  
   const [topic, setTopic] = useState('')
   const [platform, setPlatform] = useState('小红书')
   const [ideas, setIdeas] = useState<any[]>([])
@@ -50,87 +49,82 @@ export default function Home() {
   }, {})
 
   return (
-    <div className="w-full min-h-screen flex bg-[#F8FAFC]">
-      {/* 左侧导航栏 */}
-      <aside className="w-64 bg-white border-r border-slate-200 flex flex-col shadow-sm">
-        <div className="p-6 border-b border-slate-100">
-          <div className="font-bold text-slate-800 text-lg flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-black text-white flex items-center justify-center">
-              <LayoutDashboard size={18} />
-            </div>
-            内容运营助手
+    <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#F8FAFC', fontFamily: 'sans-serif' }}>
+      
+      {/* 👇 左侧侧边栏：全部用内联样式写死 */}
+      <aside style={{ width: '260px', backgroundColor: '#fff', borderRight: '1px solid #E2E8F0', display: 'flex', flexDirection: 'column' }}>
+        <div style={{ padding: '24px', borderBottom: '1px solid #F1F5F9', fontWeight: 'bold', fontSize: '18px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div style={{ width: '32px', height: '32px', backgroundColor: '#000', color: '#fff', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <LayoutDashboard size={18} />
           </div>
+          内容运营助手
         </div>
         
-        <nav className="flex-1 p-4 space-y-2">
+        <nav style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
           <button
             onClick={() => setActiveTab('generate')}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
-              activeTab === 'generate' 
-                ? 'bg-black text-white shadow-md' 
-                : 'text-slate-600 hover:bg-slate-100'
-            }`}
+            style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', borderRadius: '12px', border: 'none', cursor: 'pointer', fontSize: '14px', fontWeight: '500', transition: 'all 0.2s',
+              backgroundColor: activeTab === 'generate' ? '#000' : 'transparent',
+              color: activeTab === 'generate' ? '#fff' : '#475569',
+            }}
           >
             <Sparkles size={18} /> AI 灵感生成
           </button>
           
           <button
             onClick={() => setActiveTab('history')}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
-              activeTab === 'history' 
-                ? 'bg-black text-white shadow-md' 
-                : 'text-slate-600 hover:bg-slate-100'
-            }`}
+            style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', borderRadius: '12px', border: 'none', cursor: 'pointer', fontSize: '14px', fontWeight: '500', transition: 'all 0.2s',
+              backgroundColor: activeTab === 'history' ? '#000' : 'transparent',
+              color: activeTab === 'history' ? '#fff' : '#475569',
+            }}
           >
             <History size={18} /> 历史记录
           </button>
         </nav>
       </aside>
 
-      {/* 右侧内容区 */}
-      <main className="flex-1 p-10 overflow-auto">
-        <div className="max-w-4xl mx-auto">
+      {/* 👇 右侧主内容区 */}
+      <main style={{ flex: 1, padding: '40px', overflowY: 'auto' }}>
+        <div style={{ maxWidth: '800px', margin: '0 auto' }}>
           
-          {/* AI 生成页 */}
           {activeTab === 'generate' && (
             <div>
-              <h1 className="text-2xl font-bold text-slate-800 mb-6">AI 灵感生成</h1>
-              <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm mb-8">
-                <div className="flex gap-4">
-                  <input
-                    className="flex-1 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-black/5"
-                    placeholder="输入你的领域（如：大学生副业、考研经验）"
-                    value={topic}
-                    onChange={(e) => setTopic(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && generate()}
-                  />
-                  <select
-                    className="border border-slate-200 rounded-xl px-4 py-3 text-sm bg-white focus:outline-none"
-                    value={platform}
-                    onChange={(e) => setPlatform(e.target.value)}
-                  >
-                    {['小红书', '公众号', '知乎', '抖音', 'B站', '微博'].map((p) => <option key={p}>{p}</option>)}
-                  </select>
-                  <button
-                    onClick={generate}
-                    disabled={loading}
-                    className="bg-black text-white px-6 py-3 rounded-xl font-medium text-sm hover:bg-slate-800 disabled:opacity-50 whitespace-nowrap"
-                  >
-                    {loading ? '生成中...' : '生成选题'}
-                  </button>
-                </div>
-                {err && <p className="text-sm text-red-500 mt-3">{err}</p>}
+              <h1 style={{ fontSize: '24px', fontWeight: 'bold', color: '#1E293B', marginBottom: '24px' }}>AI 灵感生成</h1>
+              
+              <div style={{ backgroundColor: '#fff', border: '1px solid #E2E8F0', borderRadius: '16px', padding: '24px', marginBottom: '32px', display: 'flex', gap: '16px' }}>
+                <input
+                  style={{ flex: 1, padding: '12px 16px', borderRadius: '12px', border: '1px solid #E2E8F0', fontSize: '14px', outline: 'none' }}
+                  placeholder="输入你的领域（如：大学生副业、考研经验）"
+                  value={topic}
+                  onChange={(e) => setTopic(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && generate()}
+                />
+                <select
+                  style={{ padding: '12px 16px', borderRadius: '12px', border: '1px solid #E2E8F0', fontSize: '14px', outline: 'none', backgroundColor: '#fff' }}
+                  value={platform}
+                  onChange={(e) => setPlatform(e.target.value)}
+                >
+                  {['小红书', '公众号', '知乎', '抖音', 'B站', '微博'].map((p) => <option key={p}>{p}</option>)}
+                </select>
+                <button
+                  onClick={generate}
+                  disabled={loading}
+                  style={{ backgroundColor: '#000', color: '#fff', padding: '12px 24px', borderRadius: '12px', border: 'none', fontWeight: '500', fontSize: '14px', cursor: 'pointer', whiteSpace: 'nowrap' }}
+                >
+                  {loading ? '生成中...' : '生成选题'}
+                </button>
               </div>
+              {err && <p style={{ color: '#EF4444', fontSize: '14px', marginTop: '12px' }}>{err}</p>}
 
               {ideas.length > 0 && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
                   {ideas.map((i, idx) => (
-                    <div key={idx} className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-                      <div className="font-semibold text-base mb-3 text-slate-800">{i.title}</div>
-                      <div className="text-sm text-slate-500 mb-4">{i.angle}</div>
-                      <div className="flex flex-wrap gap-2">
+                    <div key={idx} style={{ backgroundColor: '#fff', border: '1px solid #E2E8F0', borderRadius: '16px', padding: '24px' }}>
+                      <div style={{ fontWeight: '600', fontSize: '16px', marginBottom: '12px', color: '#1E293B' }}>{i.title}</div>
+                      <div style={{ fontSize: '14px', color: '#64748B', marginBottom: '16px' }}>{i.angle}</div>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                         {(i.tags || []).map((t: string) => (
-                          <span key={t} className="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-md">#{t}</span>
+                          <span key={t} style={{ fontSize: '12px', backgroundColor: '#F1F5F9', color: '#475569', padding: '4px 10px', borderRadius: '6px' }}>#{t}</span>
                         ))}
                       </div>
                     </div>
@@ -140,37 +134,36 @@ export default function Home() {
             </div>
           )}
 
-          {/* 历史记录页 */}
           {activeTab === 'history' && (
             <div>
-              <h1 className="text-2xl font-bold text-slate-800 mb-6">历史记录</h1>
+              <h1 style={{ fontSize: '24px', fontWeight: 'bold', color: '#1E293B', marginBottom: '24px' }}>历史记录</h1>
               {Object.keys(groupedHistory).length === 0 ? (
-                <div className="text-center py-20 bg-white rounded-2xl border border-dashed border-slate-200">
-                  <div className="text-slate-400 text-sm">暂无历史数据，快去生成你的第一条灵感吧！</div>
+                <div style={{ textAlign: 'center', padding: '80px 0', backgroundColor: '#fff', borderRadius: '16px', border: '1px dashed #E2E8F0', color: '#94A3B8' }}>
+                  暂无历史数据，快去生成你的第一条灵感吧！
                 </div>
               ) : (
-                <div className="space-y-4">
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                   {Object.keys(groupedHistory).map((topicKey) => (
-                    <div key={topicKey} className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+                    <div key={topicKey} style={{ backgroundColor: '#fff', border: '1px solid #E2E8F0', borderRadius: '12px', overflow: 'hidden' }}>
                       <button 
                         onClick={() => setExpandedTopic(expandedTopic === topicKey ? null : topicKey)}
-                        className="w-full flex justify-between items-center p-5 hover:bg-slate-50 transition-colors text-left"
+                        style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px', backgroundColor: '#fff', border: 'none', cursor: 'pointer' }}
                       >
-                        <div className="font-semibold text-slate-800">{topicKey}</div>
-                        <div className="text-xs font-medium text-slate-500 bg-slate-100 px-3 py-1 rounded-full">
+                        <div style={{ fontWeight: '600', color: '#1E293B' }}>{topicKey}</div>
+                        <div style={{ fontSize: '12px', color: '#64748B', backgroundColor: '#F1F5F9', padding: '4px 12px', borderRadius: '99px' }}>
                           {groupedHistory[topicKey].length} 条记录
                         </div>
                       </button>
                       
                       {expandedTopic === topicKey && (
-                        <div className="border-t border-slate-100 p-5 bg-slate-50 space-y-4">
+                        <div style={{ borderTop: '1px solid #F1F5F9', padding: '20px', backgroundColor: '#F8FAFC', display: 'flex', flexDirection: 'column', gap: '16px' }}>
                           {groupedHistory[topicKey].map((item: any) => (
-                            <div key={item.id} className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-                              <div className="font-medium text-slate-800 mb-2">{item.title}</div>
-                              <div className="text-sm text-slate-500 mb-3">{item.angle}</div>
-                              <div className="flex flex-wrap gap-2">
+                            <div key={item.id} style={{ backgroundColor: '#fff', border: '1px solid #E2E8F0', borderRadius: '12px', padding: '20px' }}>
+                              <div style={{ fontWeight: '500', color: '#1E293B', marginBottom: '8px' }}>{item.title}</div>
+                              <div style={{ fontSize: '14px', color: '#64748B', marginBottom: '12px' }}>{item.angle}</div>
+                              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                                 {(item.tags || []).map((t: string) => (
-                                  <span key={t} className="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded-md">#{t}</span>
+                                  <span key={t} style={{ fontSize: '12px', backgroundColor: '#F1F5F9', color: '#475569', padding: '4px 10px', borderRadius: '6px' }}>#{t}</span>
                                 ))}
                               </div>
                             </div>
