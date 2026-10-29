@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react'
 import { Sparkles, History, LayoutDashboard } from 'lucide-react'
 
 export default function Home() {
-  // 当前激活的标签页，默认是 'generate' (AI生成)
   const [activeTab, setActiveTab] = useState<'generate' | 'history'>('generate')
   
   const [topic, setTopic] = useState('')
@@ -51,11 +50,11 @@ export default function Home() {
   }, {})
 
   return (
-    <div className="min-h-screen flex bg-[#F8FAFC]">
-      {/* 左侧：侧边导航栏 */}
+    <div className="w-full min-h-screen flex bg-[#F8FAFC]">
+      {/* 左侧导航栏 */}
       <aside className="w-64 bg-white border-r border-slate-200 flex flex-col shadow-sm">
-        <div className="p-6">
-          <div className="font-bold text-slate-800 text-xl flex items-center gap-2">
+        <div className="p-6 border-b border-slate-100">
+          <div className="font-bold text-slate-800 text-lg flex items-center gap-2">
             <div className="w-8 h-8 rounded-lg bg-black text-white flex items-center justify-center">
               <LayoutDashboard size={18} />
             </div>
@@ -63,7 +62,7 @@ export default function Home() {
           </div>
         </div>
         
-        <nav className="flex-1 px-4 space-y-2">
+        <nav className="flex-1 p-4 space-y-2">
           <button
             onClick={() => setActiveTab('generate')}
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
@@ -88,15 +87,14 @@ export default function Home() {
         </nav>
       </aside>
 
-      {/* 右侧：内容展示区 */}
+      {/* 右侧内容区 */}
       <main className="flex-1 p-10 overflow-auto">
         <div className="max-w-4xl mx-auto">
           
-          {/* ================= 内容：AI 生成页 ================= */}
+          {/* AI 生成页 */}
           {activeTab === 'generate' && (
-            <div className="animate-in fade-in slide-in-from-bottom-4 duration-300">
+            <div>
               <h1 className="text-2xl font-bold text-slate-800 mb-6">AI 灵感生成</h1>
-              
               <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm mb-8">
                 <div className="flex gap-4">
                   <input
@@ -107,7 +105,7 @@ export default function Home() {
                     onKeyDown={(e) => e.key === 'Enter' && generate()}
                   />
                   <select
-                    className="border border-slate-200 rounded-xl px-4 py-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-black/5"
+                    className="border border-slate-200 rounded-xl px-4 py-3 text-sm bg-white focus:outline-none"
                     value={platform}
                     onChange={(e) => setPlatform(e.target.value)}
                   >
@@ -116,7 +114,7 @@ export default function Home() {
                   <button
                     onClick={generate}
                     disabled={loading}
-                    className="bg-black text-white px-6 py-3 rounded-xl font-medium text-sm hover:bg-slate-800 transition-colors disabled:opacity-50 whitespace-nowrap"
+                    className="bg-black text-white px-6 py-3 rounded-xl font-medium text-sm hover:bg-slate-800 disabled:opacity-50 whitespace-nowrap"
                   >
                     {loading ? '生成中...' : '生成选题'}
                   </button>
@@ -127,9 +125,9 @@ export default function Home() {
               {ideas.length > 0 && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   {ideas.map((i, idx) => (
-                    <div key={idx} className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow">
+                    <div key={idx} className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
                       <div className="font-semibold text-base mb-3 text-slate-800">{i.title}</div>
-                      <div className="text-sm text-slate-500 mb-4 leading-relaxed">{i.angle}</div>
+                      <div className="text-sm text-slate-500 mb-4">{i.angle}</div>
                       <div className="flex flex-wrap gap-2">
                         {(i.tags || []).map((t: string) => (
                           <span key={t} className="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-md">#{t}</span>
@@ -142,11 +140,10 @@ export default function Home() {
             </div>
           )}
 
-          {/* ================= 内容：历史记录页 ================= */}
+          {/* 历史记录页 */}
           {activeTab === 'history' && (
-            <div className="animate-in fade-in slide-in-from-bottom-4 duration-300">
+            <div>
               <h1 className="text-2xl font-bold text-slate-800 mb-6">历史记录</h1>
-              
               {Object.keys(groupedHistory).length === 0 ? (
                 <div className="text-center py-20 bg-white rounded-2xl border border-dashed border-slate-200">
                   <div className="text-slate-400 text-sm">暂无历史数据，快去生成你的第一条灵感吧！</div>
@@ -186,7 +183,6 @@ export default function Home() {
               )}
             </div>
           )}
-
         </div>
       </main>
     </div>
