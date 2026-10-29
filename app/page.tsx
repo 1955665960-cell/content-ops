@@ -12,7 +12,7 @@ export default function Home() {
     if (!topic.trim()) return
     setLoading(true); setErr(''); setIdeas([])
     try {
-      const API_URL = '/api/ai/ideas'
+      const API_URL = '/api/ai/test'
       
       const res = await fetch(API_URL, {
         method: 'POST',
