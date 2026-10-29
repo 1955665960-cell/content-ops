@@ -1,15 +1,13 @@
 import { NextResponse } from 'next/server'
+import { createClient } from '@/lib/supabase/server'
 
 export async function POST(req: Request) {
   try {
     const { topic } = await req.json()
     const apiKey = process.env.DEEPSEEK_API_KEY
 
-    if (!apiKey) {
-      throw new Error('DEEPSEEK_API_KEY is not set in Vercel')
-    }
+    if (!apiKey) throw new Error('DEEPSEEK_API_KEY is not set')
 
-    // 直接用 fetch 请求，不走 SDK
     const response = await fetch('https://api.deepseek.com/chat/completions', {
       method: 'POST',
       headers: {
@@ -26,16 +24,31 @@ export async function POST(req: Request) {
     })
 
     const data = await response.json()
-    
-    if (data.error) {
-      throw new Error(data.error.message || 'DeepSeek API error')
-    }
+    if (data.error) throw new Error(data.error.message)
 
     const result = JSON.parse(data.choices[0].message.content)
+    
+    // 👇 将数据存入 Supabase 数据库
+    const supabase = await createClient()
+    const rowsToInsert = result.ideas.map((i: any) => ({
+      title: i.title,
+      angle: i.angle,
+      tags: i.tags || [],
+      score: i.score || 0,
+      topic: topic
+    }))
+
+    const { error: dbError } = await supabase.from('ideas').insert(rowsToInsert)
+
+    if (dbError) {
+      console.error('Database insert failed:', dbError.message)
+      // 即便数据库报错（比如没登录或 RLS 拦截），我们依然把 AI 结果返回给前端展示
+    }
+
     return NextResponse.json({ ideas: result.ideas || [] })
 
   } catch (error: any) {
-    console.error('API Route Error:', error.message) // 这样能在 Vercel 日志里看到真实报错
+    console.error('API Route Error:', error.message)
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 }
